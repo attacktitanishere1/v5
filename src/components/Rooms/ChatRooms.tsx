@@ -218,20 +218,25 @@ export default function ChatRooms() {
                   </div>
                   {room.members.some(m => m.id === currentUser?.id) ? (
                     <div className="flex items-center space-x-2">
-                      <button className="p-2 rounded-full bg-yellow-500 text-white hover:bg-yellow-600 transition-colors">
-                        onClick={(e) => handleFavoriteRoom(room.id, e)}
-                        <Star size={16} fill={room.favoritedBy?.includes(currentUser?.id || '') ? 'currentColor' : 'none'} />
-                      </button>
                       <button className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors">
                         <LogOut size={16} />
                       </button>
                     </div>
                   ) : (
-                    <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                      Join
-                    </button>
-                  )}
-                </div>
+                {room.members.some(m => m.id === currentUser?.id) && (
+                  <button
+                    onClick={(e) => handleFavoriteRoom(room.id, e)}
+                    className={`p-2 rounded-full transition-colors duration-200 ${
+                      room.favoritedBy?.includes(currentUser?.id || '')
+                        ? 'text-yellow-500 bg-yellow-100'
+                        : userPreferences.theme.isDark
+                        ? 'text-gray-400 hover:text-yellow-400 hover:bg-gray-700'
+                        : 'text-gray-600 hover:text-yellow-500 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Star size={16} fill={room.favoritedBy?.includes(currentUser?.id || '') ? 'currentColor' : 'none'} />
+                  </button>
+                )}
                 
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">

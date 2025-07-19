@@ -5,6 +5,7 @@ import NotificationsModal from './NotificationsModal';
 import SettingsModal from './SettingsModal';
 import ReferralModal from './ReferralModal';
 import CreditsModal from './CreditsModal';
+import SavedConfessionsModal from './SavedConfessionsModal';
 
 export default function Profile() {
   const { currentUser, confessions, friendRequests, logout, userPreferences, updatePreferences, markAllNotificationsAsRead, updateCredits } = useApp();
@@ -12,6 +13,7 @@ export default function Profile() {
   const [showSettings, setShowSettings] = useState(false);
   const [showReferral, setShowReferral] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
+  const [showSavedConfessions, setShowSavedConfessions] = useState(false);
 
   if (!currentUser) return null;
 
@@ -293,6 +295,13 @@ export default function Profile() {
         <SettingsModal
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
+        />
+      )}
+      
+      {showSavedConfessions && (
+        <SavedConfessionsModal
+          isOpen={showSavedConfessions}
+          onClose={() => setShowSavedConfessions(false)}
         />
       )}
     </div>

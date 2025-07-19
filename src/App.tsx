@@ -8,6 +8,7 @@ import Confessions from './components/Confessions/Confessions';
 import Profile from './components/Profile/Profile';
 import AuthModal from './components/Auth/AuthModal';
 import SettingsModal from './components/Profile/SettingsModal';
+import AdminDashboard from './components/Admin/AdminDashboard';
 
 function AppContent() {
   const { currentUser, userPreferences } = useApp();
@@ -15,6 +16,13 @@ function AppContent() {
   const [showAuth, setShowAuth] = useState(!currentUser);
   const [showProfile, setShowProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  
+  // Check if current URL is admin route
+  const isAdminRoute = window.location.pathname === '/admin';
+  
+  if (isAdminRoute) {
+    return <AdminDashboard />;
+  }
 
   if (!currentUser) {
     return <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />;

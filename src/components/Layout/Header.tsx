@@ -1,5 +1,5 @@
 import React from 'react';
-import { Coins, Settings, User, Bell } from 'lucide-react';
+import { Coins, Settings, User, Bell, Moon, Sun } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import CreditsModal from '../Profile/CreditsModal';
 
@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onProfileClick, onSettingsClick }: HeaderProps) {
-  const { currentUser, userPreferences, updateCredits, notifications } = useApp();
+  const { currentUser, userPreferences, updateCredits, notifications, updatePreferences } = useApp();
   const [showCreditsModal, setShowCreditsModal] = React.useState(false);
   
   const handleCreditsClick = () => {
@@ -33,6 +33,21 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
       </div>
       
       <div className="flex items-center space-x-4">
+        <button
+          onClick={() => updatePreferences({
+            theme: { ...userPreferences.theme, isDark: !userPreferences.theme.isDark }
+          })}
+          className={`p-2 rounded-full transition-colors duration-200 ${
+            userPreferences.theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+          }`}
+        >
+          {userPreferences.theme.isDark ? (
+            <Sun size={20} className="text-yellow-500" />
+          ) : (
+            <Moon size={20} className="text-gray-600" />
+          )}
+        </button>
+        
         <button
           onClick={handleCreditsClick}
           className="flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 transform hover:scale-105"
