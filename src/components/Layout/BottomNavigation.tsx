@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, Users, Heart } from 'lucide-react';
+import { MessageCircle, Users, Heart, Compass } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 interface BottomNavigationProps {
@@ -12,7 +12,9 @@ export default function BottomNavigation({ activeTab, onTabChange }: BottomNavig
   
   const tabs = [
     { id: 'confessions', label: 'Confessions', icon: Heart },
+    { id: 'news', label: 'News', icon: MessageCircle },
     { id: 'rooms', label: 'Rooms', icon: Users },
+    { id: 'discover', label: 'Discover', icon: Compass },
     { id: 'private', label: 'Private', icon: MessageCircle },
   ];
 

@@ -3,6 +3,7 @@ import { Search, Plus, Users, Lock, Globe, Shield, Star, LogOut } from 'lucide-r
 import { useApp } from '../../context/AppContext';
 import { RoomCategory } from '../../types';
 import CreateRoomModal from './CreateRoomModal';
+import SuperSecretRoomModal from './SuperSecretRoomModal';
 import RoomChat from './RoomChat';
 
 export default function ChatRooms() {
@@ -11,6 +12,7 @@ export default function ChatRooms() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'public' | 'private' | 'super_secret'>('all');
+  const [showSuperSecretModal, setShowSuperSecretModal] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<RoomCategory | 'all'>('all');
 
   const categories: { id: RoomCategory | 'all'; label: string; emoji: string }[] = [
@@ -28,6 +30,7 @@ export default function ChatRooms() {
     .filter(room => {
       const matchesSearch = room.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFilter = filter === 'all' ||
+        (filter === 'favorites' && room.favoritedBy?.includes(currentUser?.id || '')) ||
         (filter === 'public' && !room.isPrivate) ||
         (filter === 'private' && room.isPrivate && !room.isSuperSecret) ||
         (filter === 'super_secret' && room.isSuperSecret);
@@ -37,7 +40,8 @@ export default function ChatRooms() {
       const canViewSuperSecret = !room.isSuperSecret || 
         room.members.some(m => m.id === currentUser?.id) ||
         room.creatorId === currentUser?.id ||
-        filter === 'super_secret';
+        filter === 'super_secret' ||
+        filter === 'favorites';
       
       return matchesSearch && matchesFilter && matchesCategory && canViewSuperSecret;
     })
@@ -93,6 +97,13 @@ export default function ChatRooms() {
             >
               <Plus size={20} />
             </button>
+            <button
+              onClick={() => setShowSuperSecretModal(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors duration-200"
+              title="Join Super Secret Room"
+            >
+              <Shield size={20} />
+            </button>
           </div>
         </div>
 
@@ -138,6 +149,7 @@ export default function ChatRooms() {
         <div className="flex space-x-1">
           {[
             { id: 'all', label: 'All' },
+            { id: 'favorites', label: 'Favorites' },
             { id: 'public', label: 'Public' },
             { id: 'private', label: 'Private' },
             { id: 'super_secret', label: 'Super Secret' },
@@ -196,8 +208,11 @@ export default function ChatRooms() {
                       <div className="flex items-center space-x-2">
                         <h3 className={`font-bold text-lg ${
                           userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'
-                        }`}>
+                        } ${room.onlineCount >= 20 ? 'animate-pulse' : ''}`}>
                           {room.name}
+                          {room.onlineCount >= 20 && (
+                            <span className="ml-2 text-orange-500 animate-bounce">🔥</span>
+                          )}
                         </h3>
                         {room.isSuperSecret ? (
                           <Shield size={16} className="text-purple-500" />
@@ -307,6 +322,14 @@ export default function ChatRooms() {
         <CreateRoomModal
           isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
+        />
+      )}
+      
+      {/* Super Secret Room Modal */}
+      {showSuperSecretModal && (
+        <SuperSecretRoomModal
+          isOpen={showSuperSecretModal}
+          onClose={() => setShowSuperSecretModal(false)}
         />
       )}
     </div>
