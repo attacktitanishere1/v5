@@ -222,7 +222,8 @@ export default function ChatRooms() {
                         <LogOut size={16} />
                       </button>
                     </div>
-                  ) : (
+                  ) : null}
+                </div>
                 {room.members.some(m => m.id === currentUser?.id) && (
                   <button
                     onClick={(e) => handleFavoriteRoom(room.id, e)}
