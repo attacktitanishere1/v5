@@ -110,10 +110,16 @@ export default function Confessions() {
         {filteredConfessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center p-4">
             <Heart size={48} className={userPreferences.theme.isDark ? 'text-gray-600' : 'text-gray-400'} />
-            <h3 className={`text-lg font-medium mt-4 ${userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+            <h3 className={`font-medium mt-4 ${userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-600'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-base' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-xl' : 'text-lg'
+            }`}>
               No confessions found
             </h3>
-            <p className={`text-sm mt-2 ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className={`mt-2 ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-500'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-xs' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-base' : 'text-sm'
+            }`}>
               Be the first to share something!
             </p>
           </div>

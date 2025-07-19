@@ -38,6 +38,7 @@ export interface ChatRoom {
   members: User[];
   admins: string[];
   bannedUsers: string[];
+  favoritedBy?: string[];
   createdAt: string;
   lastActivity: string;
 }

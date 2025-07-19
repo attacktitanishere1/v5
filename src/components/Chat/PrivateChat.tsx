@@ -54,8 +54,7 @@ export default function PrivateChat() {
     
     if (diffInHours < 24) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } else {
-      return date.toLocaleDateString();
+    return `${Math.floor(diffInHours / 24)}d ago`;
     }
   };
 
@@ -184,14 +183,6 @@ export default function PrivateChat() {
                       <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
                         {unreadCount}
                       </span>
-                    )}
-                    {!user.isOnline && user.lastSeen && (
-                      <div className="flex items-center space-x-1">
-                        <Clock size={12} className={userPreferences.theme.isDark ? 'text-gray-500' : 'text-gray-400'} />
-                        <span className={`text-xs ${userPreferences.theme.isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                          {formatTime(user.lastSeen)}
-                        </span>
-                      </div>
                     )}
                   </div>
                 </div>

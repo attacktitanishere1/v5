@@ -1,6 +1,7 @@
 import React from 'react';
 import { Coins, Settings, User, Bell } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import CreditsModal from '../Profile/CreditsModal';
 
 interface HeaderProps {
   onProfileClick: () => void;
@@ -9,10 +10,10 @@ interface HeaderProps {
 
 export default function Header({ onProfileClick, onSettingsClick }: HeaderProps) {
   const { currentUser, userPreferences, updateCredits, notifications } = useApp();
+  const [showCreditsModal, setShowCreditsModal] = React.useState(false);
   
-  const earnCredits = () => {
-    // Mock earning credits (ads)
-    updateCredits(25);
+  const handleCreditsClick = () => {
+    setShowCreditsModal(true);
   };
 
   const unreadNotifications = notifications.filter(n => !n.isRead && n.userId === currentUser?.id);
@@ -33,7 +34,7 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
       
       <div className="flex items-center space-x-4">
         <button
-          onClick={earnCredits}
+          onClick={handleCreditsClick}
           className="flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 transform hover:scale-105"
         >
           <Coins size={16} />
@@ -73,6 +74,14 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
           />
         </button>
       </div>
+      
+      {/* Credits Modal */}
+      {showCreditsModal && (
+        <CreditsModal
+          isOpen={showCreditsModal}
+          onClose={() => setShowCreditsModal(false)}
+        />
+      )}
     </header>
   );
 }

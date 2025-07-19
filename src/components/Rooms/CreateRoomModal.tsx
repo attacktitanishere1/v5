@@ -245,7 +245,7 @@ export default function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProp
                     <p className={`text-sm ${
                       userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'
                     }`}>
-                      Hidden from public, requires room ID
+                      Hidden from public, requires room ID and password
                     </p>
                   </div>
                 </div>

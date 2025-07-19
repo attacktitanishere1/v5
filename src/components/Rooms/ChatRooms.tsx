@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { Search, Plus, Users, Lock, Globe, Shield, Eye, Star, LogOut } from 'lucide-react';
+import { Search, Plus, Users, Lock, Globe, Shield, Star, LogOut } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { RoomCategory } from '../../types';
 import CreateRoomModal from './CreateRoomModal';
-import SuperSecretRoomModal from './SuperSecretRoomModal';
 import RoomChat from './RoomChat';
 
 export default function ChatRooms() {
-  const { chatRooms, currentUser, userPreferences } = useApp();
+  const { chatRooms, currentUser, userPreferences, favoriteRoom, unfavoriteRoom } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showSuperSecretModal, setShowSuperSecretModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'public' | 'private' | 'super_secret'>('all');
   const [categoryFilter, setCategoryFilter] = useState<RoomCategory | 'all'>('all');
@@ -43,11 +41,34 @@ export default function ChatRooms() {
       
       return matchesSearch && matchesFilter && matchesCategory && canViewSuperSecret;
     })
-    .sort((a, b) => new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime());
+    .sort((a, b) => {
+      // Favorited rooms first
+      const aFavorited = a.favoritedBy?.includes(currentUser?.id || '') || false;
+      const bFavorited = b.favoritedBy?.includes(currentUser?.id || '') || false;
+      
+      if (aFavorited && !bFavorited) return -1;
+      if (!aFavorited && bFavorited) return 1;
+      
+      // Then by last activity
+      return new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime();
+    });
 
   const getCategoryEmoji = (category: RoomCategory) => {
     const categoryMap = categories.find(c => c.id === category);
     return categoryMap?.emoji || '🤔';
+  };
+
+  const handleFavoriteRoom = (roomId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const room = chatRooms.find(r => r.id === roomId);
+    if (!room || !currentUser) return;
+    
+    const isFavorited = room.favoritedBy?.includes(currentUser.id) || false;
+    if (isFavorited) {
+      unfavoriteRoom(roomId);
+    } else {
+      favoriteRoom(roomId);
+    }
   };
 
   if (selectedRoom) {
@@ -66,13 +87,6 @@ export default function ChatRooms() {
             Chat Rooms
           </h2>
           <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setShowSuperSecretModal(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors duration-200"
-              title="Super Secret Room"
-            >
-              <Shield size={20} />
-            </button>
             <button
               onClick={() => setShowCreateModal(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full transition-colors duration-200"
@@ -205,7 +219,8 @@ export default function ChatRooms() {
                   {room.members.some(m => m.id === currentUser?.id) ? (
                     <div className="flex items-center space-x-2">
                       <button className="p-2 rounded-full bg-yellow-500 text-white hover:bg-yellow-600 transition-colors">
-                        <Star size={16} />
+                        onClick={(e) => handleFavoriteRoom(room.id, e)}
+                        <Star size={16} fill={room.favoritedBy?.includes(currentUser?.id || '') ? 'currentColor' : 'none'} />
                       </button>
                       <button className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors">
                         <LogOut size={16} />
@@ -251,31 +266,9 @@ export default function ChatRooms() {
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <div className="flex -space-x-2">
-                      {room.members.slice(0, 3).map((member, index) => (
-                        <div
-                          key={member.id}
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white border-2 ${
-                            userPreferences.theme.isDark ? 'border-gray-800' : 'border-white'
-                          } ${
-                            member.credits >= 200 ? 'bg-gradient-to-r from-orange-400 to-red-500' :
-                            member.credits >= 100 ? 'bg-gradient-to-r from-blue-400 to-purple-500' :
-                            'bg-gradient-to-r from-green-400 to-blue-500'
-                          } shadow-lg`}
-                        >
-                          {member.username.charAt(0).toUpperCase()}
-                        </div>
-                      ))}
-                      {room.memberCount > 3 && (
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
-                          userPreferences.theme.isDark 
-                            ? 'border-gray-800 bg-gray-600 text-gray-300' 
-                            : 'border-white bg-gray-400 text-white'
-                        } shadow-lg`}>
-                          +{room.memberCount - 3}
-                        </div>
-                      )}
-                    </div>
+                    {room.favoritedBy?.includes(currentUser?.id || '') && (
+                      <Star size={16} className="text-yellow-500" fill="currentColor" />
+                    )}
                   </div>
                 </div>
                 
@@ -308,14 +301,6 @@ export default function ChatRooms() {
         <CreateRoomModal
           isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
-        />
-      )}
-
-      {/* Super Secret Room Modal */}
-      {showSuperSecretModal && (
-        <SuperSecretRoomModal
-          isOpen={showSuperSecretModal}
-          onClose={() => setShowSuperSecretModal(false)}
         />
       )}
     </div>

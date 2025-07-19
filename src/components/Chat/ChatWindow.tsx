@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Send, Smile, Image, MoreVertical, Check, CheckCheck } from 'lucide-react';
+import { ArrowLeft, Send, Smile, Image, MoreVertical, Check, CheckCheck, UserMinus, Ban, Info } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { User } from '../../types';
+import EmojiPicker from './EmojiPicker';
+import ChatOptionsModal from './ChatOptionsModal';
 
 interface ChatWindowProps {
   user: User;
@@ -9,9 +11,11 @@ interface ChatWindowProps {
 }
 
 export default function ChatWindow({ user, onBack }: ChatWindowProps) {
-  const { currentUser, messages, sendMessage, userPreferences } = useApp();
+  const { currentUser, messages, sendMessage, userPreferences, blockUser, deleteFriend } = useApp();
   const [message, setMessage] = useState('');
-  const [showOptions, setShowOptions] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showChatOptions, setShowChatOptions] = useState(false);
+  const [showImagePicker, setShowImagePicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const chatMessages = messages.filter(
@@ -35,6 +39,16 @@ export default function ChatWindow({ user, onBack }: ChatWindowProps) {
     
     sendMessage(user.id, message.trim());
     setMessage('');
+  };
+
+  const handleEmojiSelect = (emoji: string) => {
+    setMessage(prev => prev + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const getLastSeenText = () => {
+    if (user.isOnline) return 'Online';
+    return user.lastSeen ? `Last seen ${new Date(user.lastSeen).toLocaleDateString()}` : 'Offline';
   };
 
   const formatTime = (timestamp: string) => {
@@ -71,13 +85,13 @@ export default function ChatWindow({ user, onBack }: ChatWindowProps) {
             <h3 className={`font-medium ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
               {user.username}
             </h3>
-            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              {user.isOnline ? 'Online' : 'Offline'}
+            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} ${userPreferences.theme.fontSize === 'small' ? 'text-xs' : userPreferences.theme.fontSize === 'large' ? 'text-base' : 'text-sm'}`}>
+              {getLastSeenText()}
             </p>
           </div>
         </div>
         <button
-          onClick={() => setShowOptions(!showOptions)}
+          onClick={() => setShowChatOptions(true)}
           className={`p-2 rounded-full ${userPreferences.theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors duration-200`}
         >
           <MoreVertical size={20} className={userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-600'} />
@@ -88,7 +102,7 @@ export default function ChatWindow({ user, onBack }: ChatWindowProps) {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {chatMessages.length === 0 ? (
           <div className="text-center py-8">
-            <p className={`${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} ${userPreferences.theme.fontSize === 'small' ? 'text-sm' : userPreferences.theme.fontSize === 'large' ? 'text-lg' : 'text-base'}`}>
               Start your conversation with {user.username}
             </p>
           </div>
@@ -107,7 +121,7 @@ export default function ChatWindow({ user, onBack }: ChatWindowProps) {
                     ? 'bg-gray-700 text-white' 
                     : 'bg-white text-gray-900 border border-gray-200'
                 } shadow-sm`}>
-                  <p className="text-sm">{msg.content}</p>
+                  <p className={`${userPreferences.theme.fontSize === 'small' ? 'text-xs' : userPreferences.theme.fontSize === 'large' ? 'text-base' : 'text-sm'}`}>{msg.content}</p>
                   <p className={`text-xs mt-1 ${
                     isOwn 
                       ? 'text-blue-100' 
@@ -127,7 +141,7 @@ export default function ChatWindow({ user, onBack }: ChatWindowProps) {
 
       {/* Message Input */}
       <div className={`${userPreferences.theme.isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t p-4`}>
-        <form onSubmit={handleSend} className="flex items-center space-x-2">
+        <form onSubmit={handleSend} className="flex items-center space-x-2 relative">
           <div className="flex-1 relative">
             <input
               type="text"
@@ -142,10 +156,18 @@ export default function ChatWindow({ user, onBack }: ChatWindowProps) {
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200`}
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
-              <button type="button">
+              <button 
+                type="button" 
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className={`${userPreferences.theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} p-1 rounded transition-colors`}
+              >
                 <Smile size={18} className={userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} />
               </button>
-              <button type="button">
+              <button 
+                type="button"
+                onClick={() => setShowImagePicker(!showImagePicker)}
+                className={`${userPreferences.theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} p-1 rounded transition-colors`}
+              >
                 <Image size={18} className={userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} />
               </button>
             </div>
@@ -158,12 +180,30 @@ export default function ChatWindow({ user, onBack }: ChatWindowProps) {
             <Send size={20} />
           </button>
         </form>
+        
+        {/* Emoji Picker */}
+        {showEmojiPicker && (
+          <EmojiPicker 
+            onEmojiSelect={handleEmojiSelect}
+            onClose={() => setShowEmojiPicker(false)}
+            isDark={userPreferences.theme.isDark}
+          />
+        )}
+        
         {!currentUser?.credits && (
           <p className="text-red-500 text-sm mt-2 text-center">
             You need credits to send messages. Tap the credit counter to earn more!
           </p>
         )}
       </div>
+      
+      {/* Chat Options Modal */}
+      {showChatOptions && (
+        <ChatOptionsModal
+          user={user}
+          onClose={() => setShowChatOptions(false)}
+        />
+      )}
     </div>
   );
 }

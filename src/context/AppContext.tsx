@@ -55,6 +55,14 @@ interface AppContextType {
   // Settings
   updatePreferences: (preferences: Partial<UserPreferences>) => void;
   updateCredits: (amount: number) => void;
+  
+  // Friend management
+  blockUser: (userId: string) => void;
+  deleteFriend: (userId: string) => void;
+  
+  // Room favorites
+  favoriteRoom: (roomId: string) => void;
+  unfavoriteRoom: (roomId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -124,6 +132,7 @@ const mockChatRooms: ChatRoom[] = [
     members: mockUsers,
     admins: ['1'],
     bannedUsers: [],
+    favoritedBy: [],
     createdAt: '2024-01-15T10:00:00Z',
     lastActivity: '2024-01-20T15:30:00Z',
   },
@@ -562,6 +571,41 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCurrentUser(prev => prev ? { ...prev, credits: Math.max(0, prev.credits + amount) } : null);
   };
 
+  const blockUser = (userId: string) => {
+    if (!currentUser) return;
+    // In a real app, this would update the user's blocked list
+    console.log(`Blocked user: ${userId}`);
+  };
+
+  const deleteFriend = (userId: string) => {
+    if (!currentUser) return;
+    // Remove friend requests and messages
+    setFriendRequests(prev => prev.filter(req => 
+      !(req.senderId === userId || req.receiverId === userId)
+    ));
+    setMessages(prev => prev.filter(msg => 
+      !(msg.senderId === userId || msg.receiverId === userId)
+    ));
+  };
+
+  const favoriteRoom = (roomId: string) => {
+    if (!currentUser) return;
+    setChatRooms(prev => prev.map(room => 
+      room.id === roomId 
+        ? { ...room, favoritedBy: [...(room.favoritedBy || []), currentUser.id] }
+        : room
+    ));
+  };
+
+  const unfavoriteRoom = (roomId: string) => {
+    if (!currentUser) return;
+    setChatRooms(prev => prev.map(room => 
+      room.id === roomId 
+        ? { ...room, favoritedBy: (room.favoritedBy || []).filter(id => id !== currentUser.id) }
+        : room
+    ));
+  };
+
   const value: AppContextType = {
     currentUser,
     users,
@@ -600,6 +644,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     markAllNotificationsAsRead,
     updatePreferences,
     updateCredits,
+    blockUser,
+    deleteFriend,
+    favoriteRoom,
+    unfavoriteRoom,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

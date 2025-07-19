@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Settings, Bell, Users, Bookmark, Shield, Moon, Sun, LogOut, Share, Copy, Gift } from 'lucide-react';
+import { Settings, Bell, Users, Bookmark, Shield, Moon, Sun, LogOut, Share, Copy, Gift, Play, UserPlus } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import NotificationsModal from './NotificationsModal';
 import SettingsModal from './SettingsModal';
 import ReferralModal from './ReferralModal';
+import CreditsModal from './CreditsModal';
 
 export default function Profile() {
-  const { currentUser, confessions, friendRequests, logout, userPreferences, updatePreferences, markAllNotificationsAsRead } = useApp();
+  const { currentUser, confessions, friendRequests, logout, userPreferences, updatePreferences, markAllNotificationsAsRead, updateCredits } = useApp();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showReferral, setShowReferral] = useState(false);
+  const [showCredits, setShowCredits] = useState(false);
 
   if (!currentUser) return null;
 
@@ -50,11 +52,14 @@ export default function Profile() {
   const creditStatus = getCreditStatus(currentUser.credits);
 
   return (
-    <div className={`h-full ${userPreferences.theme.isDark ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-200`}>
+    <div className={`h-full ${userPreferences.theme.isDark ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-200 overflow-y-auto`}>
       {/* Header */}
       <div className={`${userPreferences.theme.isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b p-6`}>
         <div className="flex items-center justify-between mb-6">
-          <h2 className={`text-xl font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className={`text-xl font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'} ${
+            userPreferences.theme.fontSize === 'small' ? 'text-lg' : 
+            userPreferences.theme.fontSize === 'large' ? 'text-2xl' : 'text-xl'
+          }`}>
             Profile
           </h2>
           <div className="flex items-center space-x-2">
@@ -93,38 +98,65 @@ export default function Profile() {
               </h3>
               <span className="text-xl">{creditStatus.badge}</span>
             </div>
-            <p className={`text-sm mb-2 ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`mb-2 ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-xs' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-base' : 'text-sm'
+            }`}>
               {creditStatus.label} • Joined {formatJoinDate(currentUser.joinDate)}
             </p>
-            <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r ${creditStatus.color} text-white`}>
+            <button 
+              onClick={() => setShowCredits(true)}
+              className={`inline-flex items-center px-3 py-1 rounded-full font-medium bg-gradient-to-r ${creditStatus.color} text-white hover:scale-105 transition-transform duration-200 ${
+                userPreferences.theme.fontSize === 'small' ? 'text-xs' : 
+                userPreferences.theme.fontSize === 'large' ? 'text-base' : 'text-sm'
+              }`}
+            >
               {currentUser.credits} Credits
-            </div>
+            </button>
           </div>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mt-6">
           <div className="text-center">
-            <p className={`text-2xl font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+            <p className={`font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-xl' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-3xl' : 'text-2xl'
+            }`}>
               {userConfessions.length}
             </p>
-            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-xs' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-base' : 'text-sm'
+            }`}>
               Confessions
             </p>
           </div>
           <div className="text-center">
-            <p className={`text-2xl font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+            <p className={`font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-xl' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-3xl' : 'text-2xl'
+            }`}>
               {userConfessions.reduce((sum, c) => sum + c.likes, 0)}
             </p>
-            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-xs' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-base' : 'text-sm'
+            }`}>
               Total Likes
             </p>
           </div>
           <div className="text-center">
-            <p className={`text-2xl font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+            <p className={`font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-xl' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-3xl' : 'text-2xl'
+            }`}>
               {savedConfessions.length}
             </p>
-            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-xs' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-base' : 'text-sm'
+            }`}>
               Saved
             </p>
           </div>
@@ -141,11 +173,17 @@ export default function Profile() {
         >
           <div className="flex items-center space-x-3">
             <Gift size={20} className="text-green-500" />
-            <span className={`font-medium ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+            <span className={`font-medium ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-sm' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-lg' : 'text-base'
+            }`}>
               Invite Friends
             </span>
           </div>
-          <span className="text-green-500 text-sm font-medium">+250 credits</span>
+          <span className={`text-green-500 font-medium ${
+            userPreferences.theme.fontSize === 'small' ? 'text-xs' : 
+            userPreferences.theme.fontSize === 'large' ? 'text-base' : 'text-sm'
+          }`}>+250 credits</span>
         </button>
 
         <button
@@ -230,6 +268,13 @@ export default function Profile() {
       </div>
 
       {/* Modals */}
+      {showCredits && (
+        <CreditsModal
+          isOpen={showCredits}
+          onClose={() => setShowCredits(false)}
+        />
+      )}
+      
       {showReferral && (
         <ReferralModal
           isOpen={showReferral}
