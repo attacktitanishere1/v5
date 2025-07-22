@@ -8,6 +8,8 @@ export interface User {
   lastSeen?: string;
   profilePicture?: string;
   isBlocked?: boolean;
+  avatar?: string;
+  isProfileHidden?: boolean;
 }
 
 export interface Message {
@@ -60,6 +62,9 @@ export interface Confession {
   isLiked: boolean;
   isSaved: boolean;
   isEdited: boolean;
+  isVoice?: boolean;
+  audioUrl?: string;
+  duration?: number;
 }
 
 export interface ConfessionComment {
@@ -122,4 +127,12 @@ export interface UserPreferences {
     showOnlineStatus: boolean;
     allowFriendRequests: boolean;
   };
+}
+
+export interface ReportData {
+  contentType: 'confession' | 'comment' | 'message' | 'user';
+  contentId: string;
+  reportedUserId?: string;
+  category: string;
+  additionalInfo?: string;
 }

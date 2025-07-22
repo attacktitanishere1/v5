@@ -365,6 +365,17 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
           userId={confession.authorId}
         />
       )}
+      
+      {/* Report Modal */}
+      {showReportModal && (
+        <ReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          contentType="confession"
+          contentId={confession.id}
+          reportedUserId={confession.authorId}
+        />
+      )}
     </div>
   );
 }

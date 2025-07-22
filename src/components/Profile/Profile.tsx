@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Settings, Bell, Users, Bookmark, Shield, Moon, Sun, LogOut, Share, Copy, Gift, Play, UserPlus } from 'lucide-react';
+import { Settings, Bell, Users, Bookmark, Shield, Moon, Sun, LogOut, Share, Copy, Gift, Play, UserPlus, Search } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import NotificationsModal from './NotificationsModal';
 import SettingsModal from './SettingsModal';
 import ReferralModal from './ReferralModal';
 import CreditsModal from './CreditsModal';
 import SavedConfessionsModal from './SavedConfessionsModal';
+import AvatarSelector from './AvatarSelector';
+import PrivacySafetyModal from './PrivacySafetyModal';
+import UserSearch from '../Search/UserSearch';
 
 export default function Profile() {
   const { currentUser, confessions, friendRequests, logout, userPreferences, updatePreferences, markAllNotificationsAsRead, updateCredits } = useApp();
@@ -14,6 +17,9 @@ export default function Profile() {
   const [showReferral, setShowReferral] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
   const [showSavedConfessions, setShowSavedConfessions] = useState(false);
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
+  const [showPrivacySafety, setShowPrivacySafety] = useState(false);
+  const [showUserSearch, setShowUserSearch] = useState(false);
 
   if (!currentUser) return null;
 
@@ -90,9 +96,14 @@ export default function Profile() {
 
         {/* Profile Info */}
         <div className="flex items-center space-x-4">
-          <div className={`w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white bg-gradient-to-r ${creditStatus.color}`}>
+          <button
+            onClick={() => setShowAvatarSelector(true)}
+            className={`w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white bg-gradient-to-r ${creditStatus.color} hover:scale-105 transition-transform duration-200 ${
+              currentUser.credits >= 1000 ? 'animate-pulse' : ''
+            }`}
+          >
             {currentUser.username.charAt(0).toUpperCase()}
-          </div>
+          </button>
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-1">
               <h3 className={`text-xl font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -168,6 +179,23 @@ export default function Profile() {
       {/* Menu Items */}
       <div className="p-4 space-y-2">
         <button
+          onClick={() => setShowUserSearch(true)}
+          className={`w-full flex items-center justify-between p-4 rounded-lg transition-colors duration-200 ${
+            userPreferences.theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-white hover:shadow-sm'
+          }`}
+        >
+          <div className="flex items-center space-x-3">
+            <Search size={20} className="text-blue-500" />
+            <span className={`font-medium ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'} ${
+              userPreferences.theme.fontSize === 'small' ? 'text-sm' : 
+              userPreferences.theme.fontSize === 'large' ? 'text-lg' : 'text-base'
+            }`}>
+              Search Users
+            </span>
+          </div>
+        </button>
+
+        <button
           onClick={() => setShowReferral(true)}
           className={`w-full flex items-center justify-between p-4 rounded-lg transition-colors duration-200 ${
             userPreferences.theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-white hover:shadow-sm'
@@ -228,7 +256,7 @@ export default function Profile() {
         <button className={`w-full flex items-center space-x-3 p-4 rounded-lg transition-colors duration-200 ${
           userPreferences.theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-white hover:shadow-sm'
         }`}>
-          <Shield size={20} className={userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} />
+          <Shield size={20} className="text-red-500" />
           <span className={`font-medium ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
             Privacy & Safety
           </span>
@@ -270,6 +298,27 @@ export default function Profile() {
       </div>
 
       {/* Modals */}
+      {showAvatarSelector && (
+        <AvatarSelector
+          isOpen={showAvatarSelector}
+          onClose={() => setShowAvatarSelector(false)}
+        />
+      )}
+      
+      {showPrivacySafety && (
+        <PrivacySafetyModal
+          isOpen={showPrivacySafety}
+          onClose={() => setShowPrivacySafety(false)}
+        />
+      )}
+      
+      {showUserSearch && (
+        <UserSearch
+          isOpen={showUserSearch}
+          onClose={() => setShowUserSearch(false)}
+        />
+      )}
+      
       {showCredits && (
         <CreditsModal
           isOpen={showCredits}

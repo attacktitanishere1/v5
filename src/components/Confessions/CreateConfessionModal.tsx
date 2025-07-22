@@ -155,6 +155,7 @@ export default function CreateConfessionModal({ isOpen, onClose }: CreateConfess
             {isLoading ? 'Sharing...' : 'Share Confession'}
           </button>
         </form>
+        )}
       </div>
     </div>
   );

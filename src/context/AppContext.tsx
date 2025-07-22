@@ -70,6 +70,12 @@ interface AppContextType {
   // Room favorites
   favoriteRoom: (roomId: string) => void;
   unfavoriteRoom: (roomId: string) => void;
+  
+  // New functions
+  updateUserAvatar: (avatarId: string) => void;
+  submitReport: (report: ReportData) => Promise<boolean>;
+  createVoiceConfession: (title: string, category: string, audioBlob: Blob, duration: number) => void;
+  shareConfession: (confessionId: string) => string;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -704,6 +710,73 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     suspendRoom,
     hideRoom,
     banUser,
+    updateUserAvatar: (avatarId: string) => {
+      if (!currentUser) return;
+      setCurrentUser(prev => prev ? { ...prev, avatar: avatarId } : null);
+    },
+    submitReport: async (report: ReportData): Promise<boolean> => {
+      // Mock report submission
+      console.log('Report submitted:', report);
+      
+      // Add notification for successful report
+      const notification: Notification = {
+        id: Date.now().toString(),
+        userId: currentUser?.id || '',
+        type: 'system',
+        title: 'Report Submitted',
+        content: 'Thank you for helping keep our community safe. We\'ll review your report within 24 hours.',
+        timestamp: new Date().toISOString(),
+        isRead: false,
+      };
+      
+      setNotifications(prev => [...prev, notification]);
+      return true;
+    },
+    createVoiceConfession: (title: string, category: string, audioBlob: Blob, duration: number) => {
+      if (!currentUser) return;
+      
+      // Convert blob to URL for demo purposes
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      const newConfession: Confession = {
+        id: Date.now().toString(),
+        title,
+        content: `[Voice Confession - ${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')}]`,
+        category: category as any,
+        authorId: currentUser.id,
+        authorUsername: currentUser.username,
+        timestamp: new Date().toISOString(),
+        likes: 0,
+        comments: [],
+        isLiked: false,
+        isSaved: false,
+        isEdited: false,
+        isVoice: true,
+        audioUrl,
+        duration,
+      };
+      
+      setConfessions(prev => [...prev, newConfession]);
+    },
+    shareConfession: (confessionId: string): string => {
+      const confession = confessions.find(c => c.id === confessionId);
+      if (!confession) return '';
+      
+      const shareUrl = `${window.location.origin}/confession/${confessionId}`;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: confession.title,
+          text: confession.content.substring(0, 100) + '...',
+          url: shareUrl,
+        });
+      } else {
+        navigator.clipboard.writeText(shareUrl);
+        alert('Link copied to clipboard!');
+      }
+      
+      return shareUrl;
+    },
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
