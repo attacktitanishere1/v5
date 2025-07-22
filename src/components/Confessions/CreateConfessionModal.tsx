@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Type, Mic } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ConfessionCategory } from '../../types';
+import VoiceConfessionRecorder from './VoiceConfessionRecorder';
 
 interface CreateConfessionModalProps {
   isOpen: boolean;
@@ -9,13 +10,14 @@ interface CreateConfessionModalProps {
 }
 
 export default function CreateConfessionModal({ isOpen, onClose }: CreateConfessionModalProps) {
-  const { createConfession, userPreferences } = useApp();
+  const { createConfession, createVoiceConfession, userPreferences } = useApp();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     category: 'other' as ConfessionCategory,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [confessionType, setConfessionType] = useState<'text' | 'voice'>('text');
 
   if (!isOpen) return null;
 
@@ -42,6 +44,15 @@ export default function CreateConfessionModal({ isOpen, onClose }: CreateConfess
     setIsLoading(false);
   };
 
+  const handleVoiceSubmit = (audioBlob: Blob, duration: number) => {
+    if (!formData.title.trim()) return;
+    
+    createVoiceConfession(formData.title.trim(), formData.category, audioBlob, duration);
+    onClose();
+    setFormData({ title: '', content: '', category: 'other' });
+    setConfessionType('text');
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className={`${
@@ -59,6 +70,99 @@ export default function CreateConfessionModal({ isOpen, onClose }: CreateConfess
           </button>
         </div>
 
+        {/* Confession Type Selector */}
+        <div className="flex space-x-2 mb-6">
+          <button
+            onClick={() => setConfessionType('text')}
+            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg transition-all duration-200 ${
+              confessionType === 'text'
+                ? 'bg-purple-600 text-white'
+                : userPreferences.theme.isDark
+                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Type size={20} />
+            <span>Text Confession</span>
+          </button>
+          <button
+            onClick={() => setConfessionType('voice')}
+            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg transition-all duration-200 ${
+              confessionType === 'voice'
+                ? 'bg-purple-600 text-white'
+                : userPreferences.theme.isDark
+                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Mic size={20} />
+            <span>Voice Confession</span>
+          </button>
+        </div>
+
+        {confessionType === 'voice' ? (
+          <div className="space-y-4">
+            {/* Title for Voice Confession */}
+            <div>
+              <label className={`block text-sm font-medium mb-1 ${
+                userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                Title *
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors duration-200 ${
+                  userPreferences.theme.isDark 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                }`}
+                placeholder="Give your voice confession a title"
+                required
+                maxLength={100}
+              />
+            </div>
+
+            {/* Category for Voice Confession */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${
+                userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                Category
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {categories.map(({ id, label, emoji }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, category: id })}
+                    className={`flex items-center space-x-2 p-3 rounded-lg border-2 text-left transition-all duration-200 ${
+                      formData.category === id
+                        ? 'border-purple-500 bg-purple-50'
+                        : userPreferences.theme.isDark
+                        ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
+                        : 'border-gray-300 hover:border-gray-400 bg-white'
+                    }`}
+                  >
+                    <span className="text-lg">{emoji}</span>
+                    <span className={`text-sm font-medium ${
+                      userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      {label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Voice Recorder */}
+            <VoiceConfessionRecorder
+              onSubmit={handleVoiceSubmit}
+              onCancel={() => setConfessionType('text')}
+            />
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className={`block text-sm font-medium mb-2 ${
