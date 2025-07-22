@@ -16,6 +16,7 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
   const [editTitle, setEditTitle] = useState(confession.title);
   const [editContent, setEditContent] = useState(confession.content);
   const [showUserActions, setShowUserActions] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const isOwner = currentUser?.id === confession.authorId;
 
