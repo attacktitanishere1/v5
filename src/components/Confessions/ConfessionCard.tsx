@@ -202,9 +202,35 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
             <h3 className={`font-bold text-lg mb-2 ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
               {confession.title}
             </h3>
+            {confession.isVoice && confession.audioUrl ? (
+              <div className={`p-4 rounded-lg border-2 border-dashed ${
+                userPreferences.theme.isDark ? 'border-gray-600 bg-gray-700' : 'border-gray-300 bg-gray-50'
+              } mb-3`}>
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => {
+                      const audio = new Audio(confession.audioUrl);
+                      audio.play();
+                    }}
+                    className="bg-purple-600 hover:bg-purple-700 text-white p-3 rounded-full transition-colors duration-200"
+                  >
+                    <Play size={20} />
+                  </button>
+                  <div>
+                    <p className={`font-medium ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+                      Voice Confession
+                    </p>
+                    <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Duration: {Math.floor((confession.duration || 0) / 60)}:{((confession.duration || 0) % 60).toString().padStart(2, '0')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
             <p className={`${userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed`}>
               {confession.content}
             </p>
+            )}
           </>
         )}
       </div>
@@ -282,8 +308,9 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
                   <div className="flex items-center space-x-2">
                     <button className={`text-sm font-medium hover:underline ${
                       userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      {comment.authorUsername}
+                      className={`font-medium hover:underline ${
+                        confession.authorId === '1' ? 'text-red-500 animate-pulse' :
+                      {confession.authorId === '1' ? '🔥 ' + confession.authorUsername + ' 🔥' : confession.authorUsername}
                     </button>
                     <span className={`text-xs ${userPreferences.theme.isDark ? 'text-gray-500' : 'text-gray-500'}`}>
                       {formatTimeAgo(comment.timestamp)}

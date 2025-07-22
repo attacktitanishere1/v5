@@ -139,6 +139,14 @@ export default function Confessions() {
           onClose={() => setShowCreateModal(false)}
         />
       )}
+      
+      {/* Saved Confessions Modal */}
+      {showSavedConfessions && (
+        <SavedConfessionsModal
+          isOpen={showSavedConfessions}
+          onClose={() => setShowSavedConfessions(false)}
+        />
+      )}
     </div>
   );
 }

@@ -63,11 +63,12 @@ export default function VoiceConfessionRecorder({ onSubmit, onCancel }: VoiceCon
       // Start timer
       timerRef.current = setInterval(() => {
         setRecordingTime(prev => {
-          if (prev >= MAX_DURATION) {
+          const newTime = prev + 1;
+          if (newTime >= MAX_DURATION) {
             stopRecording();
             return MAX_DURATION;
           }
-          return prev + 1;
+          return newTime;
         });
       }, 1000);
 

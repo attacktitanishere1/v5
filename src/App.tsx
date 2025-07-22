@@ -6,7 +6,6 @@ import PrivateChat from './components/Chat/PrivateChat';
 import ChatRooms from './components/Rooms/ChatRooms';
 import Confessions from './components/Confessions/Confessions';
 import News from './components/News/News';
-import Discover from './components/Discover/Discover';
 import Profile from './components/Profile/Profile';
 import AuthModal from './components/Auth/AuthModal';
 import SettingsModal from './components/Profile/SettingsModal';
@@ -44,8 +43,6 @@ function AppContent() {
         return <Confessions />;
       case 'news':
         return <News />;
-      case 'discover':
-        return <Discover />;
       default:
         return <PrivateChat />;
     }

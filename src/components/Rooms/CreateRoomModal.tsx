@@ -225,9 +225,9 @@ export default function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProp
 
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, isPrivate: true, isSuperSecret: false })}
+                onClick={() => setFormData({ ...formData, isPrivate: true, isSuperSecret: true, roomId: '' })}
                 className={`w-full p-3 rounded-lg border-2 text-left transition-all duration-200 ${
-                  false
+                  formData.isSuperSecret
                     ? 'border-blue-500 bg-blue-50'
                     : userPreferences.theme.isDark
                     ? 'border-gray-600 hover:border-gray-500'
@@ -235,17 +235,17 @@ export default function CreateRoomModal({ isOpen, onClose }: CreateRoomModalProp
                 }`}
               >
                 <div className="flex items-center space-x-3">
-                  <Lock size={20} className="text-yellow-500" />
+                  <Shield size={20} className="text-purple-500" />
                   <div>
                     <h3 className={`font-medium ${
                       userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'
                     }`}>
-                      Private Room with Invite Only
+                      Super Secret Room (150 credits)
                     </h3>
                     <p className={`text-sm ${
                       userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'
                     }`}>
-                      Invite only with password
+                      Hidden from public, requires Room ID and password
                     </p>
                   </div>
                 </div>

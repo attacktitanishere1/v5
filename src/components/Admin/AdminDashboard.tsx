@@ -83,60 +83,75 @@ export default function AdminDashboard() {
 
   const renderOverview = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div className="bg-white rounded-lg shadow p-6">
+      <button
+        onClick={() => setActiveTab('users')}
+        className={`${userPreferences.theme.isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} rounded-lg shadow p-6 text-left transition-colors duration-200`}
+      >
         <div className="flex items-center">
           <Users className="text-blue-500" size={32} />
           <div className="ml-4">
-            <h3 className="text-lg font-semibold text-gray-900">Total Users</h3>
+            <h3 className={`text-lg font-semibold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>Total Users</h3>
             <p className="text-2xl font-bold text-blue-600">{stats.totalUsers}</p>
-            <p className="text-sm text-gray-600">{stats.onlineUsers} online</p>
+            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>{stats.onlineUsers} online</p>
           </div>
         </div>
-      </div>
+      </button>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <button
+        onClick={() => setActiveTab('content')}
+        className={`${userPreferences.theme.isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} rounded-lg shadow p-6 text-left transition-colors duration-200`}
+      >
         <div className="flex items-center">
           <MessageSquare className="text-green-500" size={32} />
           <div className="ml-4">
-            <h3 className="text-lg font-semibold text-gray-900">Messages</h3>
+            <h3 className={`text-lg font-semibold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>Messages</h3>
             <p className="text-2xl font-bold text-green-600">{stats.totalMessages}</p>
-            <p className="text-sm text-gray-600">Total sent</p>
+            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>Total sent</p>
           </div>
         </div>
-      </div>
+      </button>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <button
+        onClick={() => setActiveTab('content')}
+        className={`${userPreferences.theme.isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} rounded-lg shadow p-6 text-left transition-colors duration-200`}
+      >
         <div className="flex items-center">
           <Shield className="text-purple-500" size={32} />
           <div className="ml-4">
-            <h3 className="text-lg font-semibold text-gray-900">Confessions</h3>
+            <h3 className={`text-lg font-semibold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>Confessions</h3>
             <p className="text-2xl font-bold text-purple-600">{stats.totalConfessions}</p>
-            <p className="text-sm text-gray-600">Published</p>
+            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>Published</p>
           </div>
         </div>
-      </div>
+      </button>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <button
+        onClick={() => setActiveTab('rooms')}
+        className={`${userPreferences.theme.isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} rounded-lg shadow p-6 text-left transition-colors duration-200`}
+      >
         <div className="flex items-center">
           <MessageSquare className="text-orange-500" size={32} />
           <div className="ml-4">
-            <h3 className="text-lg font-semibold text-gray-900">Chat Rooms</h3>
+            <h3 className={`text-lg font-semibold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>Chat Rooms</h3>
             <p className="text-2xl font-bold text-orange-600">{stats.activeRooms}</p>
-            <p className="text-sm text-gray-600">{stats.suspendedRooms} suspended</p>
+            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>{stats.suspendedRooms} suspended</p>
           </div>
         </div>
-      </div>
+      </button>
 
-      <div className="bg-white rounded-lg shadow p-6">
+      <button
+        onClick={() => setActiveTab('reports')}
+        className={`${userPreferences.theme.isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} rounded-lg shadow p-6 text-left transition-colors duration-200`}
+      >
         <div className="flex items-center">
           <Flag className="text-red-500" size={32} />
           <div className="ml-4">
-            <h3 className="text-lg font-semibold text-gray-900">Reports</h3>
+            <h3 className={`text-lg font-semibold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>Reports</h3>
             <p className="text-2xl font-bold text-red-600">{stats.pendingReports}</p>
-            <p className="text-sm text-gray-600">Pending review</p>
+            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>Pending review</p>
           </div>
         </div>
-      </div>
+      </button>
     </div>
   );
 

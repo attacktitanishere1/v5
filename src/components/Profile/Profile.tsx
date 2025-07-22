@@ -235,23 +235,6 @@ export default function Profile() {
           )}
         </button>
 
-        <button className={`w-full flex items-center space-x-3 p-4 rounded-lg transition-colors duration-200 ${
-          userPreferences.theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-white hover:shadow-sm'
-        }`}>
-          <Bookmark size={20} className={userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} />
-          <div className="flex-1 flex items-center justify-between">
-            <span className={`font-medium ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
-              Saved Confessions
-            </span>
-            {savedConfessions.length > 0 && (
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                userPreferences.theme.isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-              }`}>
-                {savedConfessions.length}
-              </span>
-            )}
-          </div>
-        </button>
 
         <button className={`w-full flex items-center space-x-3 p-4 rounded-lg transition-colors duration-200 ${
           userPreferences.theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-white hover:shadow-sm'

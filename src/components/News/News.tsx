@@ -146,7 +146,7 @@ export default function News() {
                   <div>
                     <div className="flex items-center space-x-2">
                       <h3 className={`font-medium ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
-                        Admin
+                        🔥 Admin 🔥
                       </h3>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${
                         post.type === 'poll' ? 'bg-blue-100 text-blue-800' :
