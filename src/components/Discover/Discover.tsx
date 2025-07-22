@@ -21,6 +21,7 @@ interface DiscoverItem {
 export default function Discover() {
   const { userPreferences } = useApp();
   const [activeFilter, setActiveFilter] = useState<'all' | 'trending' | 'popular' | 'new'>('all');
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const discoverItems: DiscoverItem[] = [
     {
@@ -55,6 +56,23 @@ export default function Discover() {
       description: 'Win 500 credits for the most inspiring confession',
       stats: { credits: 500 },
       badge: 'Event',
+    },
+    {
+      id: '5',
+      type: 'room',
+      title: 'Study Buddies',
+      description: 'Connect with fellow students and share study tips',
+      stats: { members: 892 },
+      badge: 'Popular',
+      trending: false,
+    },
+    {
+      id: '6',
+      type: 'user',
+      title: 'WisdomSeeker',
+      description: 'Shares inspiring life advice and experiences',
+      stats: { credits: 1850 },
+      badge: 'VIP Gold',
     },
   ];
 
@@ -100,10 +118,15 @@ export default function Discover() {
       case 'popular':
         return (item.stats.likes || 0) > 100 || (item.stats.members || 0) > 500;
       case 'new':
-        return !item.trending && !item.badge;
+        return item.id === '5' || item.id === '6'; // Mock new items
       default:
         return true;
     }
+  }).sort((a, b) => {
+    // Sort by engagement score for better discovery
+    const aScore = (a.stats.likes || 0) + (a.stats.members || 0) + (a.stats.comments || 0);
+    const bScore = (b.stats.likes || 0) + (b.stats.members || 0) + (b.stats.comments || 0);
+    return bScore - aScore;
   });
 
   return (
@@ -143,6 +166,16 @@ export default function Discover() {
 
       {/* Discover Items */}
       <div className="overflow-y-auto h-full pb-20">
+        {/* Refresh Button */}
+        <div className="p-4 border-b border-gray-200">
+          <button
+            onClick={() => setRefreshKey(prev => prev + 1)}
+            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105"
+          >
+            🔄 Refresh Discoveries
+          </button>
+        </div>
+        
         <div className="space-y-4 p-4">
           {filteredItems.map((item) => (
             <div
@@ -150,6 +183,23 @@ export default function Discover() {
               className={`${
                 userPreferences.theme.isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
               } border rounded-lg p-4 transition-all duration-200 hover:shadow-lg cursor-pointer transform hover:scale-[1.02]`}
+              onClick={() => {
+                // Handle item click based on type
+                switch (item.type) {
+                  case 'room':
+                    alert(`Joining room: ${item.title}`);
+                    break;
+                  case 'user':
+                    alert(`Viewing profile: ${item.title}`);
+                    break;
+                  case 'confession':
+                    alert(`Opening confession: ${item.title}`);
+                    break;
+                  case 'event':
+                    alert(`Joining event: ${item.title}`);
+                    break;
+                }
+              }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">

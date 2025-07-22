@@ -41,6 +41,8 @@ export interface ChatRoom {
   favoritedBy?: string[];
   createdAt: string;
   lastActivity: string;
+  isSuspended?: boolean;
+  isHidden?: boolean;
 }
 
 export type RoomCategory = 'general' | 'gaming' | 'study' | 'work' | 'entertainment' | 'support' | 'other';

@@ -56,6 +56,13 @@ interface AppContextType {
   updatePreferences: (preferences: Partial<UserPreferences>) => void;
   updateCredits: (amount: number) => void;
   
+  // Admin functions
+  createNewsPost: (title: string, content: string, type: 'update' | 'poll' | 'announcement', pollOptions?: string[]) => void;
+  sendCreditsToUser: (username: string, amount: number, reason: string) => boolean;
+  suspendRoom: (roomId: string) => void;
+  hideRoom: (roomId: string) => void;
+  banUser: (userId: string) => void;
+  
   // Friend management
   blockUser: (userId: string) => void;
   deleteFriend: (userId: string) => void;
@@ -606,6 +613,50 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     ));
   };
 
+  const createNewsPost = (title: string, content: string, type: 'update' | 'poll' | 'announcement', pollOptions?: string[]) => {
+    // This would typically create a news post in the database
+    console.log('Creating news post:', { title, content, type, pollOptions });
+  };
+
+  const sendCreditsToUser = (username: string, amount: number, reason: string): boolean => {
+    const targetUser = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+    if (!targetUser || !currentUser) return false;
+
+    // Update target user credits (in real app, this would be a database operation)
+    console.log(`Sending ${amount} credits to ${username} for: ${reason}`);
+    
+    // Create notification for the user
+    const notification: Notification = {
+      id: Date.now().toString(),
+      userId: targetUser.id,
+      type: 'admin',
+      title: 'Credits Received!',
+      content: `You received ${amount} credits from admin. Reason: ${reason}`,
+      timestamp: new Date().toISOString(),
+      isRead: false,
+    };
+    
+    setNotifications(prev => [...prev, notification]);
+    return true;
+  };
+
+  const suspendRoom = (roomId: string) => {
+    setChatRooms(prev => prev.map(room => 
+      room.id === roomId ? { ...room, isSuspended: !room.isSuspended } : room
+    ));
+  };
+
+  const hideRoom = (roomId: string) => {
+    setChatRooms(prev => prev.map(room => 
+      room.id === roomId ? { ...room, isHidden: !room.isHidden } : room
+    ));
+  };
+
+  const banUser = (userId: string) => {
+    // In real app, this would update user status in database
+    console.log(`Banning user: ${userId}`);
+  };
+
   const value: AppContextType = {
     currentUser,
     users,
@@ -648,6 +699,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     deleteFriend,
     favoriteRoom,
     unfavoriteRoom,
+    createNewsPost,
+    sendCreditsToUser,
+    suspendRoom,
+    hideRoom,
+    banUser,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
