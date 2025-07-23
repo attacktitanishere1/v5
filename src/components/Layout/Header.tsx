@@ -35,7 +35,7 @@ export default function Header({ onProfileClick, onSettingsClick, onAuthClick }:
       <div className="flex items-center space-x-3">
         <h1 className={`text-xl font-bold ${
           userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'
-          SecretHangout
+        }`}>
           SecretHangout
         </h1>
       </div>
