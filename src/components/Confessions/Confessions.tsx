@@ -3,7 +3,7 @@ import { Plus, Filter, Heart, MessageSquare, Bookmark, TrendingUp, Clock } from 
 import { useApp } from '../../context/AppContext';
 import { ConfessionCategory } from '../../types';
 import CreateConfessionModal from './CreateConfessionModal';
-import ConfessionCard from './ConfessionCard';
+import { ConfessionCard } from './ConfessionCard';
 import SavedConfessionsModal from '../Profile/SavedConfessionsModal';
 
 export default function Confessions() {
