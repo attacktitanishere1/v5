@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AppProvider, useApp } from './context/AppContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Header from './components/Layout/Header';
 import BottomNavigation from './components/Layout/BottomNavigation';
 import PrivateChat from './components/Chat/PrivateChat';
@@ -13,7 +13,7 @@ import SettingsModal from './components/Profile/SettingsModal';
 import AdminDashboard from './components/Admin/AdminDashboard';
 
 function AppContent() {
-  const { currentUser, userPreferences } = useApp();
+  const { currentUser, userPreferences } = useAuth();
   const [activeTab, setActiveTab] = useState('confessions');
   const [authMode, setAuthMode] = useState<'none' | 'login' | 'signup'>('none');
   const [showProfile, setShowProfile] = useState(false);
@@ -119,9 +119,9 @@ function AppContent() {
 
 function App() {
   return (
-    <AppProvider>
+    <AuthProvider>
       <AppContent />
-    </AppProvider>
+    </AuthProvider>
   );
 }
 
