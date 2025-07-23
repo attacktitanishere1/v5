@@ -7,7 +7,7 @@ import ConfessionCard from './ConfessionCard';
 import SavedConfessionsModal from '../Profile/SavedConfessionsModal';
 
 export default function Confessions() {
-  const { confessions, userPreferences } = useApp();
+  const { confessions, userPreferences, currentUser } = useApp();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showSavedConfessions, setShowSavedConfessions] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ConfessionCategory | 'all'>('all');
@@ -59,18 +59,22 @@ export default function Confessions() {
             Confessions
           </h2>
           <div className="flex items-center space-x-2">
-            <button
+            {currentUser && (
+              <button
               onClick={() => setShowSavedConfessions(true)}
               className="bg-yellow-600 hover:bg-yellow-700 text-white p-2 rounded-full transition-colors duration-200"
             >
               <Bookmark size={20} />
-            </button>
-            <button
+              </button>
+            )}
+            {currentUser && (
+              <button
               onClick={() => setShowCreateModal(true)}
               className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors duration-200"
             >
               <Plus size={20} />
-            </button>
+              </button>
+            )}
           </div>
         </div>
 
@@ -138,6 +142,19 @@ export default function Confessions() {
             {filteredConfessions.map((confession) => (
               <ConfessionCard key={confession.id} confession={confession} />
             ))}
+            
+            {!currentUser && (
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-lg text-center">
+                <h3 className="text-xl font-bold mb-2">Want to see more?</h3>
+                <p className="mb-4">Join AnonChat to access unlimited confessions, create your own, and connect with others!</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
+                >
+                  Sign Up Now
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Coins, Settings, User, Bell, Moon, Sun } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import CreditsModal from '../Profile/CreditsModal';
+import AuthModal from '../Auth/AuthModal';
 
 interface HeaderProps {
   onProfileClick: () => void;
@@ -11,6 +12,7 @@ interface HeaderProps {
 export default function Header({ onProfileClick, onSettingsClick }: HeaderProps) {
   const { currentUser, userPreferences, updateCredits, notifications, updatePreferences } = useApp();
   const [showCreditsModal, setShowCreditsModal] = React.useState(false);
+  const [showAuth, setShowAuth] = React.useState(false);
   
   const handleCreditsClick = () => {
     setShowCreditsModal(true);
@@ -18,7 +20,6 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
 
   const unreadNotifications = notifications.filter(n => !n.isRead && n.userId === currentUser?.id);
 
-  if (!currentUser) return null;
 
   return (
     <header className={`${
@@ -33,7 +34,8 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
       </div>
       
       <div className="flex items-center space-x-4">
-        <button
+        {currentUser && (
+          <button
           onClick={() => updatePreferences({
             theme: { ...userPreferences.theme, isDark: !userPreferences.theme.isDark }
           })}
@@ -46,17 +48,28 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
           ) : (
             <Moon size={20} className="text-gray-600" />
           )}
-        </button>
+          </button>
+        )}
         
-        <button
+        {currentUser ? (
+          <button
           onClick={handleCreditsClick}
           className="flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 transform hover:scale-105"
         >
           <Coins size={16} />
           <span>{currentUser.credits}</span>
-        </button>
+          </button>
+        ) : (
+          <button
+            onClick={() => setShowAuth(true)}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
+          >
+            Sign Up
+          </button>
+        )}
         
-        <button
+        {currentUser && (
+          <button
           onClick={onProfileClick}
           className={`relative p-2 rounded-full transition-colors duration-200 ${
             userPreferences.theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
@@ -69,13 +82,15 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
             } transition-colors duration-200`}
           />
           {unreadNotifications.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
               {unreadNotifications.length > 9 ? '9+' : unreadNotifications.length}
             </span>
           )}
-        </button>
+          </button>
+        )}
         
-        <button
+        {currentUser && (
+          <button
           onClick={onSettingsClick}
           className={`p-2 rounded-full transition-colors duration-200 ${
             userPreferences.theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
@@ -87,14 +102,23 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
               userPreferences.theme.isDark ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'
             } cursor-pointer transition-colors duration-200`}
           />
-        </button>
+          </button>
+        )}
       </div>
       
       {/* Credits Modal */}
-      {showCreditsModal && (
+      {showCreditsModal && currentUser && (
         <CreditsModal
           isOpen={showCreditsModal}
           onClose={() => setShowCreditsModal(false)}
+        />
+      )}
+      
+      {/* Auth Modal */}
+      {showAuth && (
+        <AuthModal
+          isOpen={showAuth}
+          onClose={() => setShowAuth(false)}
         />
       )}
     </header>

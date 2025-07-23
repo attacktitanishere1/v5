@@ -19,7 +19,6 @@ export default function Profile() {
   const [showSavedConfessions, setShowSavedConfessions] = useState(false);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [showPrivacySafety, setShowPrivacySafety] = useState(false);
-  const [showUserSearch, setShowUserSearch] = useState(false);
 
   if (!currentUser) return null;
 
@@ -178,23 +177,6 @@ export default function Profile() {
 
       {/* Menu Items */}
       <div className="p-4 space-y-2">
-        <button
-          onClick={() => setShowUserSearch(true)}
-          className={`w-full flex items-center justify-between p-4 rounded-lg transition-colors duration-200 ${
-            userPreferences.theme.isDark ? 'hover:bg-gray-800' : 'hover:bg-white hover:shadow-sm'
-          }`}
-        >
-          <div className="flex items-center space-x-3">
-            <Search size={20} className="text-blue-500" />
-            <span className={`font-medium ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'} ${
-              userPreferences.theme.fontSize === 'small' ? 'text-sm' : 
-              userPreferences.theme.fontSize === 'large' ? 'text-lg' : 'text-base'
-            }`}>
-              Search Users
-            </span>
-          </div>
-        </button>
-
         <button
           onClick={() => setShowReferral(true)}
           className={`w-full flex items-center justify-between p-4 rounded-lg transition-colors duration-200 ${

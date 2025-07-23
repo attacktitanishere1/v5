@@ -14,7 +14,7 @@ import AdminDashboard from './components/Admin/AdminDashboard';
 function AppContent() {
   const { currentUser, userPreferences } = useApp();
   const [activeTab, setActiveTab] = useState('confessions');
-  const [showAuth, setShowAuth] = useState(!currentUser);
+  const [showAuth, setShowAuth] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
@@ -25,11 +25,16 @@ function AppContent() {
     return <AdminDashboard />;
   }
 
-  if (!currentUser) {
-    return <AuthModal isOpen={showAuth} onClose={() => setShowAuth(false)} />;
+  if (!currentUser && (activeTab !== 'confessions' || showAuth)) {
+    return <AuthModal isOpen={true} onClose={() => setShowAuth(false)} />;
   }
 
   const renderActiveTab = () => {
+    if (!currentUser && activeTab !== 'confessions') {
+      setShowAuth(true);
+      return null;
+    }
+    
     if (showProfile) {
       return <Profile />;
     }
@@ -49,6 +54,10 @@ function AppContent() {
   };
 
   const handleTabChange = (tab: string) => {
+    if (!currentUser && tab !== 'confessions') {
+      setShowAuth(true);
+      return;
+    }
     setActiveTab(tab);
     setShowProfile(false);
   };
@@ -64,13 +73,21 @@ function AppContent() {
       <main className="flex-1 overflow-hidden">
         {renderActiveTab()}
       </main>
-      <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
+      {currentUser && <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />}
       
       {/* Settings Modal */}
       {showSettings && (
         <SettingsModal
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
+        />
+      )}
+      
+      {/* Auth Modal */}
+      {showAuth && (
+        <AuthModal
+          isOpen={showAuth}
+          onClose={() => setShowAuth(false)}
         />
       )}
     </div>

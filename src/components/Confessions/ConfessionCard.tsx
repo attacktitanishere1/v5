@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageSquare, Share2, Flag, Bookmark, Play, Pause } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Flag, Bookmark, Play, Pause, Send } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Confession } from '../../types';
 import ReportModal from './ReportModal';
@@ -9,9 +9,11 @@ interface ConfessionCardProps {
 }
 
 export default function ConfessionCard({ confession }: ConfessionCardProps) {
-  const { likeConfession, saveConfession, shareConfession, userPreferences, currentUser } = useApp();
+  const { likeConfession, saveConfession, shareConfession, userPreferences, currentUser, addComment } = useApp();
   const [showReportModal, setShowReportModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
 
   const handleLike = () => {
     likeConfession(confession.id);
@@ -41,6 +43,13 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
   const toggleAudioPlayback = () => {
     setIsPlaying(!isPlaying);
     // Audio playback logic would go here
+  };
+
+  const handleAddComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+    addComment(confession.id, newComment.trim());
+    setNewComment('');
   };
 
   const isAdmin = currentUser?.id === '1'; // Check if current user is admin
@@ -187,6 +196,59 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
           <Bookmark size={18} fill={confession.isSaved ? 'currentColor' : 'none'} />
         </button>
       </div>
+
+      {/* Comments Section */}
+      {showComments && (
+        <div className={`mt-4 pt-4 border-t ${userPreferences.theme.isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className="space-y-3 mb-4">
+            {confession.comments.map((comment) => (
+              <div key={comment.id} className="flex space-x-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${
+                  comment.authorId === '1' ? 'bg-gradient-to-r from-red-500 to-orange-500 animate-pulse' : 'bg-gradient-to-r from-blue-400 to-purple-500'
+                }`}>
+                  {comment.authorUsername.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <span className={`text-sm font-medium ${
+                      comment.authorId === '1' ? 'text-red-500 animate-pulse' : userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      {comment.authorId === '1' ? '🔥 Admin 🔥' : comment.authorUsername}
+                    </span>
+                    <span className={`text-xs ${userPreferences.theme.isDark ? 'text-gray-500' : 'text-gray-500'}`}>
+                      {formatTimeAgo(comment.timestamp)}
+                    </span>
+                  </div>
+                  <p className={`text-sm mt-1 ${userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {comment.content}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <form onSubmit={handleAddComment} className="flex space-x-3">
+            <input
+              type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Add a comment..."
+              className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                userPreferences.theme.isDark 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
+            />
+            <button
+              type="submit"
+              disabled={!newComment.trim()}
+              className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+            >
+              <Send size={16} />
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Report Modal */}
       {showReportModal && (

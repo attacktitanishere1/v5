@@ -60,7 +60,8 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
           {pendingRequests.length > 0 && (
             <div>
               <h3 className={`text-sm font-medium mb-2 ${userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                Friend Requests
+                    <div className="relative">
+                      <div
               </h3>
               <div className="space-y-2">
                 {pendingRequests.map((request) => (
@@ -116,9 +117,12 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                     className={`p-3 rounded-lg transition-colors duration-200 ${
                       notification.isRead 
                         ? userPreferences.theme.isDark ? 'bg-gray-700' : 'bg-gray-50'
-                        : userPreferences.theme.isDark ? 'bg-blue-900' : 'bg-blue-50'
+                        : userPreferences.theme.isDark ? 'bg-red-900 border border-red-700' : 'bg-red-50 border border-red-200'
                     }`}
                   >
+                    {!notification.isRead && (
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    )}
                     <div className="flex items-start space-x-3">
                       {getNotificationIcon(notification.type)}
                       <div className="flex-1">
