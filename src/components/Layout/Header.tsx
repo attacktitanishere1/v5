@@ -14,6 +14,13 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
   const [showCreditsModal, setShowCreditsModal] = React.useState(false);
   const [showAuth, setShowAuth] = React.useState(false);
   
+  // Apply font size to document root
+  React.useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('font-small', 'font-medium', 'font-large');
+    root.classList.add(`font-${userPreferences.theme.fontSize}`);
+  }, [userPreferences.theme.fontSize]);
+  
   const handleCreditsClick = () => {
     setShowCreditsModal(true);
   };

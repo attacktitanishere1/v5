@@ -18,6 +18,19 @@ function AppContent() {
   const [showProfile, setShowProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
+  // Apply font size and theme to document root
+  React.useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('font-small', 'font-medium', 'font-large');
+    root.classList.add(`font-${userPreferences.theme.fontSize}`);
+    
+    if (userPreferences.theme.isDark) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [userPreferences.theme.fontSize, userPreferences.theme.isDark]);
+  
   // Check if current URL is admin route
   const isAdminRoute = window.location.pathname === '/admin';
   

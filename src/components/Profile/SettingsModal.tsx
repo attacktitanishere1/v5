@@ -48,6 +48,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     });
   };
 
+  // Apply font size class to document root
+  React.useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('font-small', 'font-medium', 'font-large');
+    root.classList.add(`font-${userPreferences.theme.fontSize}`);
+  }, [userPreferences.theme.fontSize]);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className={`${
