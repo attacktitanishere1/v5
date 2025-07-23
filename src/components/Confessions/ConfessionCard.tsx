@@ -9,11 +9,11 @@ interface ConfessionCardProps {
 }
 
 export const ConfessionCard: React.FC<ConfessionCardProps> = ({ confession }) => {
-  const { user, likeConfession, saveConfession, savedConfessions } = useApp();
+  const { user, likeConfession, saveConfession } = useApp();
   const [showUserModal, setShowUserModal] = useState(false);
   
-  const isLiked = confession.likes?.includes(user?.id || '');
-  const isSaved = savedConfessions.some(saved => saved.id === confession.id);
+  const isLiked = confession.isLiked;
+  const isSaved = confession.isSaved;
   
   const handleLike = () => {
     if (user) {
@@ -50,7 +50,7 @@ export const ConfessionCard: React.FC<ConfessionCardProps> = ({ confession }) =>
             </div>
             <div>
               <p className="font-medium text-gray-900">Anonymous</p>
-              <p className="text-sm text-gray-500">{formatTimeAgo(confession.timestamp)}</p>
+              <p className="text-sm text-gray-500">{formatTimeAgo(new Date(confession.timestamp).getTime())}</p>
             </div>
           </div>
           <button
@@ -84,7 +84,7 @@ export const ConfessionCard: React.FC<ConfessionCardProps> = ({ confession }) =>
             >
               <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
               <span className="text-sm font-medium">
-                {confession.likes?.length || 0}
+                {confession.likes || 0}
               </span>
             </button>
             
@@ -111,7 +111,8 @@ export const ConfessionCard: React.FC<ConfessionCardProps> = ({ confession }) =>
       
       {showUserModal && (
         <UserActionModal
-          confession={confession}
+          username={confession.authorUsername}
+          userId={confession.authorId}
           onClose={() => setShowUserModal(false)}
         />
       )}
