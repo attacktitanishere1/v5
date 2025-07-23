@@ -9,7 +9,7 @@ interface ConfessionCardProps {
 }
 
 export const ConfessionCard: React.FC<ConfessionCardProps> = ({ confession }) => {
-  const { currentUser, likeConfession, saveConfession, userPreferences } = useApp();
+  const { currentUser, likeConfession, saveConfession, addComment, userPreferences } = useApp();
   const [showUserModal, setShowUserModal] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -45,8 +45,7 @@ export const ConfessionCard: React.FC<ConfessionCardProps> = ({ confession }) =>
     e.preventDefault();
     if (!newComment.trim() || !currentUser) return;
     
-    // This would call addComment from context
-    // addComment(confession.id, newComment.trim());
+    addComment(confession.id, newComment.trim());
     setNewComment('');
   };
 
