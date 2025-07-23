@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Heart, MessageSquare, Bookmark, MoreHorizontal } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Confession } from '../../types';
-import { UserActionModal } from './UserActionModal';
+import UserActionModal from './UserActionModal';
 
 interface ConfessionCardProps {
   confession: Confession;
