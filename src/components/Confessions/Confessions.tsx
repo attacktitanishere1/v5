@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { ConfessionCategory } from '../../types';
 import CreateConfessionModal from './CreateConfessionModal';
 import ConfessionCard from './ConfessionCard';
+import SavedConfessionsModal from '../Profile/SavedConfessionsModal';
 
 export default function Confessions() {
   const { confessions, userPreferences } = useApp();
@@ -57,12 +58,20 @@ export default function Confessions() {
           <h2 className={`text-xl font-bold ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
             Confessions
           </h2>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors duration-200"
-          >
-            <Plus size={20} />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowSavedConfessions(true)}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white p-2 rounded-full transition-colors duration-200"
+            >
+              <Bookmark size={20} />
+            </button>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors duration-200"
+            >
+              <Plus size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Categories */}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share2, Flag, Bookmark, Play, Pause } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Flag, Bookmark, Play, Pause } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Confession } from '../../types';
 import ReportModal from './ReportModal';
@@ -9,13 +9,9 @@ interface ConfessionCardProps {
 }
 
 export default function ConfessionCard({ confession }: ConfessionCardProps) {
-  const { likeConfession, saveConfession } = useApp();
+  const { likeConfession, saveConfession, shareConfession, userPreferences, currentUser } = useApp();
   const [showReportModal, setShowReportModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-
-  const isLiked = confession.isLiked;
-  const isSaved = confession.isSaved;
 
   const handleLike = () => {
     likeConfession(confession.id);
@@ -26,22 +22,20 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
   };
 
   const handleShare = () => {
-    navigator.share?.({
-      title: 'Anonymous Confession',
-      text: confession.content,
-      url: window.location.href
-    });
+    shareConfession(confession.id);
   };
 
   const formatTimeAgo = (timestamp: string) => {
-    const date = new Date(timestamp);
     const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    const date = new Date(timestamp);
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
     
-    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes} min ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hours ago`;
+    if (diffInMinutes < 10080) return `${Math.floor(diffInMinutes / 1440)} days ago`;
+    
+    return date.toLocaleDateString();
   };
 
   const toggleAudioPlayback = () => {
@@ -49,100 +43,159 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
     // Audio playback logic would go here
   };
 
+  const isAdmin = currentUser?.id === '1'; // Check if current user is admin
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-4">
-      <div className="flex items-start justify-between mb-4">
+    <div className={`${
+      userPreferences.theme.isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+    } border rounded-lg p-4 transition-colors duration-200`}>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-3">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold">A</span>
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+            confession.authorId === '1' ? 'bg-gradient-to-r from-red-500 to-orange-500 animate-pulse' : 'bg-gradient-to-r from-purple-400 to-pink-500'
+          }`}>
+            {confession.authorUsername.charAt(0).toUpperCase()}
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">Anonymous</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {formatTimeAgo(confession.timestamp)} • {new Date(confession.timestamp).toLocaleDateString()}
+            <div className="flex items-center space-x-2">
+              <h3 className={`font-medium ${
+                userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'
+              } ${confession.authorId === '1' ? 'text-red-500 animate-pulse' : ''}`}>
+                {confession.authorId === '1' ? '🔥 Admin 🔥' : confession.authorUsername}
+              </h3>
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                confession.category === 'work' ? 'bg-blue-100 text-blue-800' :
+                confession.category === 'family' ? 'bg-green-100 text-green-800' :
+                confession.category === 'school' ? 'bg-purple-100 text-purple-800' :
+                confession.category === 'relationships' ? 'bg-pink-100 text-pink-800' :
+                confession.category === 'health' ? 'bg-red-100 text-red-800' :
+                confession.category === 'entertainment' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-gray-100 text-gray-800'
+              }`}>
+                {confession.category}
+              </span>
+            </div>
+            <p className={`text-sm ${userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              {formatTimeAgo(confession.timestamp)}
+              {confession.isEdited && <span className="ml-2 text-xs">(edited)</span>}
             </p>
           </div>
         </div>
         <button
           onClick={() => setShowReportModal(true)}
-          className="text-gray-400 hover:text-red-500 transition-colors"
+          className={`p-1 rounded-full ${
+            userPreferences.theme.isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+          } transition-colors duration-200`}
         >
-          <Flag className="w-5 h-5" />
+          <Flag size={16} className={userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'} />
         </button>
       </div>
 
-      {confession.type === 'voice' ? (
-        <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 mb-4">
-          <div className="flex items-center space-x-3">
+      {/* Content */}
+      <div className="mb-4">
+        <h4 className={`font-bold text-lg mb-2 ${userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+          {confession.title}
+        </h4>
+        
+        {confession.isVoice ? (
+          <div className={`p-4 rounded-lg ${
+            userPreferences.theme.isDark ? 'bg-gray-700' : 'bg-gray-100'
+          } flex items-center space-x-3`}>
             <button
               onClick={toggleAudioPlayback}
-              className="w-10 h-10 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center text-white transition-colors"
+              className="w-10 h-10 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center text-white transition-colors duration-200"
             >
-              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-1" />}
+              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
             </button>
             <div className="flex-1">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Voice Confession</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">1:23</span>
+                <span className={`text-sm font-medium ${
+                  userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  Voice Confession
+                </span>
+                <span className={`text-xs ${
+                  userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-500'
+                }`}>
+                  {confession.duration ? `${Math.floor(confession.duration / 60)}:${(confession.duration % 60).toString().padStart(2, '0')}` : '0:00'}
+                </span>
               </div>
-              <div className="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-2">
+              <div className={`w-full h-2 rounded-full ${
+                userPreferences.theme.isDark ? 'bg-gray-600' : 'bg-gray-300'
+              }`}>
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: '30%' }}></div>
               </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <p className="text-gray-800 dark:text-gray-200 mb-4 leading-relaxed">
-          {confession.content}
-        </p>
-      )}
+        ) : (
+          <p className={`${userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-700'} leading-relaxed`}>
+            {confession.content}
+          </p>
+        )}
+      </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center space-x-6">
+      {/* Actions */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
           <button
             onClick={handleLike}
-            className={`flex items-center space-x-2 transition-colors ${
-              isLiked 
-                ? 'text-red-500 hover:text-red-600' 
-                : 'text-gray-500 hover:text-red-500 dark:text-gray-400'
+            className={`flex items-center space-x-2 transition-all duration-200 hover:scale-105 ${
+              confession.isLiked 
+                ? 'text-red-500' 
+                : userPreferences.theme.isDark 
+                ? 'text-gray-400 hover:text-red-400' 
+                : 'text-gray-600 hover:text-red-500'
             }`}
           >
-            <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-            <span className="text-sm">{confession.likes || 0}</span>
+            <Heart size={20} fill={confession.isLiked ? 'currentColor' : 'none'} />
+            <span className="text-sm font-medium">{confession.likes}</span>
           </button>
-
-          <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 dark:text-gray-400 transition-colors">
-            <MessageCircle className="w-5 h-5" />
-            <span className="text-sm">{confession.comments || 0}</span>
-          </button>
-
+          
+          <div className={`flex items-center space-x-2 ${
+            userPreferences.theme.isDark ? 'text-gray-400' : 'text-gray-600'
+          }`}>
+            <MessageSquare size={20} />
+            <span className="text-sm font-medium">{confession.comments.length}</span>
+          </div>
+          
           <button
             onClick={handleShare}
-            className="flex items-center space-x-2 text-gray-500 hover:text-green-500 dark:text-gray-400 transition-colors"
+            className={`flex items-center space-x-2 transition-all duration-200 hover:scale-105 ${
+              userPreferences.theme.isDark 
+                ? 'text-gray-400 hover:text-green-400' 
+                : 'text-gray-600 hover:text-green-500'
+            }`}
           >
-            <Share2 className="w-5 h-5" />
-            <span className="text-sm">Share</span>
+            <Share2 size={20} />
+            <span className="text-sm font-medium">Share</span>
           </button>
         </div>
 
         <button
           onClick={handleSave}
-          className={`transition-colors ${
-            isSaved 
-              ? 'text-yellow-500 hover:text-yellow-600' 
-              : 'text-gray-500 hover:text-yellow-500 dark:text-gray-400'
+          className={`p-2 rounded-full transition-all duration-200 hover:scale-105 ${
+            confession.isSaved
+              ? userPreferences.theme.isDark
+                ? 'text-yellow-400 bg-yellow-900'
+                : 'text-yellow-500 bg-yellow-50'
+              : userPreferences.theme.isDark
+              ? 'text-gray-400 hover:text-yellow-400 hover:bg-gray-700'
+              : 'text-gray-600 hover:text-yellow-500 hover:bg-gray-100'
           }`}
         >
-          <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+          <Bookmark size={18} fill={confession.isSaved ? 'currentColor' : 'none'} />
         </button>
       </div>
 
+      {/* Report Modal */}
       {showReportModal && (
         <ReportModal
+          isOpen={showReportModal}
           onClose={() => setShowReportModal(false)}
           contentType="confession"
           contentId={confession.id}
-          reportedUserId={confession.userId}
+          reportedUserId={confession.authorId}
         />
       )}
     </div>
