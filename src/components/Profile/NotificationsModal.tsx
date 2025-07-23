@@ -60,8 +60,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
           {pendingRequests.length > 0 && (
             <div>
               <h3 className={`text-sm font-medium mb-2 ${userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                    <div className="relative">
-                      <div
+                Friend Requests
               </h3>
               <div className="space-y-2">
                 {pendingRequests.map((request) => (
