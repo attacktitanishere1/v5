@@ -196,7 +196,7 @@ export default function ReferralModal({ isOpen, onClose }: ReferralModalProps) {
                 userPreferences.theme.isDark ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 <li>1. Share your referral link with friends</li>
-                <li>2. They sign up using your link</li>
+                <li>2. They sign up to SecretHangout using your link</li>
                 <li>3. They confirm their email address</li>
                 <li>4. You both get credits!</li>
               </ol>
