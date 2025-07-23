@@ -9,13 +9,13 @@ interface ConfessionCardProps {
 }
 
 export default function ConfessionCard({ confession }: ConfessionCardProps) {
-  const { user, likeConfession, saveConfession, reportConfession } = useApp();
+  const { likeConfession, saveConfession } = useApp();
   const [showReportModal, setShowReportModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
 
-  const isLiked = confession.likes?.includes(user?.id || '');
-  const isSaved = user?.savedConfessions?.includes(confession.id);
+  const isLiked = confession.isLiked;
+  const isSaved = confession.isSaved;
 
   const handleLike = () => {
     likeConfession(confession.id);
@@ -33,12 +33,8 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
     });
   };
 
-  const handleReport = (reason: string, details: string) => {
-    reportConfession(confession.id, reason, details);
-    setShowReportModal(false);
-  };
-
-  const formatTimeAgo = (date: Date) => {
+  const formatTimeAgo = (timestamp: string) => {
+    const date = new Date(timestamp);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
     
@@ -63,7 +59,7 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white">Anonymous</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {formatTimeAgo(confession.createdAt)} • {confession.createdAt.toLocaleDateString()}
+              {formatTimeAgo(confession.timestamp)} • {new Date(confession.timestamp).toLocaleDateString()}
             </p>
           </div>
         </div>
@@ -112,12 +108,12 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
             }`}
           >
             <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-            <span className="text-sm">{confession.likes?.length || 0}</span>
+            <span className="text-sm">{confession.likes || 0}</span>
           </button>
 
           <button className="flex items-center space-x-2 text-gray-500 hover:text-blue-500 dark:text-gray-400 transition-colors">
             <MessageCircle className="w-5 h-5" />
-            <span className="text-sm">{confession.comments?.length || 0}</span>
+            <span className="text-sm">{confession.comments || 0}</span>
           </button>
 
           <button
@@ -144,7 +140,9 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
       {showReportModal && (
         <ReportModal
           onClose={() => setShowReportModal(false)}
-          onReport={handleReport}
+          contentType="confession"
+          contentId={confession.id}
+          reportedUserId={confession.userId}
         />
       )}
     </div>
