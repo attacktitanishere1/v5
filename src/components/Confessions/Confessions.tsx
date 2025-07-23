@@ -8,6 +8,7 @@ import ConfessionCard from './ConfessionCard';
 export default function Confessions() {
   const { confessions, userPreferences } = useApp();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showSavedConfessions, setShowSavedConfessions] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ConfessionCategory | 'all'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'likes' | 'comments' | 'trending'>('recent');
 
