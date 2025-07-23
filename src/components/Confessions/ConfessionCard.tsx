@@ -198,8 +198,19 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
       </div>
 
       {/* Comments Section */}
-      {showComments && (
+      {confession.comments.length > 0 && (
         <div className={`mt-4 pt-4 border-t ${userPreferences.theme.isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+          <button
+            onClick={() => setShowComments(!showComments)}
+            className={`mb-3 text-sm font-medium ${
+              userPreferences.theme.isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+            } transition-colors duration-200`}
+          >
+            {showComments ? 'Hide' : 'Show'} {confession.comments.length} comment{confession.comments.length !== 1 ? 's' : ''}
+          </button>
+          
+          {showComments && (
+            <>
           <div className="space-y-3 mb-4">
             {confession.comments.map((comment) => (
               <div key={comment.id} className="flex space-x-3">
@@ -247,6 +258,8 @@ export default function ConfessionCard({ confession }: ConfessionCardProps) {
               <Send size={16} />
             </button>
           </form>
+            </>
+          )}
         </div>
       )}
 

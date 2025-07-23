@@ -13,8 +13,8 @@ export default function BottomNavigation({ activeTab, onTabChange }: BottomNavig
   const tabs = [
     { id: 'confessions', label: 'Confessions', icon: Heart },
     { id: 'rooms', label: 'Rooms', icon: Users },
-    { id: 'news', label: 'News', icon: MessageCircle },
     { id: 'private', label: 'Private', icon: MessageCircle },
+    { id: 'news', label: 'News', icon: Compass },
   ];
 
   return (

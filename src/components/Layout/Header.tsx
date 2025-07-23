@@ -7,12 +7,12 @@ import AuthModal from '../Auth/AuthModal';
 interface HeaderProps {
   onProfileClick: () => void;
   onSettingsClick: () => void;
+  onAuthClick: () => void;
 }
 
-export default function Header({ onProfileClick, onSettingsClick }: HeaderProps) {
+export default function Header({ onProfileClick, onSettingsClick, onAuthClick }: HeaderProps) {
   const { currentUser, userPreferences, updateCredits, notifications, updatePreferences } = useApp();
   const [showCreditsModal, setShowCreditsModal] = React.useState(false);
-  const [showAuth, setShowAuth] = React.useState(false);
   
   // Apply font size to document root
   React.useEffect(() => {
@@ -35,8 +35,8 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
       <div className="flex items-center space-x-3">
         <h1 className={`text-xl font-bold ${
           userPreferences.theme.isDark ? 'text-white' : 'text-gray-900'
-        }`}>
-          AnonChat
+          SecretHangout
+          SecretHangout
         </h1>
       </div>
       
@@ -68,7 +68,7 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
           </button>
         ) : (
           <button
-            onClick={() => setShowAuth(true)}
+            onClick={onAuthClick}
             className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
           >
             Sign Up
@@ -118,14 +118,6 @@ export default function Header({ onProfileClick, onSettingsClick }: HeaderProps)
         <CreditsModal
           isOpen={showCreditsModal}
           onClose={() => setShowCreditsModal(false)}
-        />
-      )}
-      
-      {/* Auth Modal */}
-      {showAuth && (
-        <AuthModal
-          isOpen={showAuth}
-          onClose={() => setShowAuth(false)}
         />
       )}
     </header>

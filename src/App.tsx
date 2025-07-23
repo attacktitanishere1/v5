@@ -7,14 +7,15 @@ import ChatRooms from './components/Rooms/ChatRooms';
 import Confessions from './components/Confessions/Confessions';
 import News from './components/News/News';
 import Profile from './components/Profile/Profile';
-import AuthModal from './components/Auth/AuthModal';
+import LoginPage from './components/Auth/LoginPage';
+import SignupPage from './components/Auth/SignupPage';
 import SettingsModal from './components/Profile/SettingsModal';
 import AdminDashboard from './components/Admin/AdminDashboard';
 
 function AppContent() {
   const { currentUser, userPreferences } = useApp();
   const [activeTab, setActiveTab] = useState('confessions');
-  const [showAuth, setShowAuth] = useState(false);
+  const [authMode, setAuthMode] = useState<'none' | 'login' | 'signup'>('none');
   const [showProfile, setShowProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   
@@ -38,16 +39,32 @@ function AppContent() {
     return <AdminDashboard />;
   }
 
-  if (!currentUser && (activeTab !== 'confessions' || showAuth)) {
-    return <AuthModal isOpen={true} onClose={() => setShowAuth(false)} />;
+  // Show authentication pages
+  if (authMode === 'login') {
+    return (
+      <LoginPage
+        onSwitchToSignup={() => setAuthMode('signup')}
+        onBack={() => setAuthMode('none')}
+      />
+    );
+  }
+
+  if (authMode === 'signup') {
+    return (
+      <SignupPage
+        onSwitchToLogin={() => setAuthMode('login')}
+        onBack={() => setAuthMode('none')}
+      />
+    );
+  }
+
+  // Redirect to login for protected routes
+  if (!currentUser && activeTab !== 'confessions') {
+    setAuthMode('login');
+    return null;
   }
 
   const renderActiveTab = () => {
-    if (!currentUser && activeTab !== 'confessions') {
-      setShowAuth(true);
-      return null;
-    }
-    
     if (showProfile) {
       return <Profile />;
     }
@@ -62,13 +79,13 @@ function AppContent() {
       case 'news':
         return <News />;
       default:
-        return <PrivateChat />;
+        return <Confessions />;
     }
   };
 
   const handleTabChange = (tab: string) => {
     if (!currentUser && tab !== 'confessions') {
-      setShowAuth(true);
+      setAuthMode('login');
       return;
     }
     setActiveTab(tab);
@@ -82,6 +99,7 @@ function AppContent() {
       <Header 
         onProfileClick={() => setShowProfile(!showProfile)}
         onSettingsClick={() => setShowSettings(true)}
+        onAuthClick={() => setAuthMode('login')}
       />
       <main className="flex-1 overflow-hidden">
         {renderActiveTab()}
@@ -93,14 +111,6 @@ function AppContent() {
         <SettingsModal
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
-        />
-      )}
-      
-      {/* Auth Modal */}
-      {showAuth && (
-        <AuthModal
-          isOpen={showAuth}
-          onClose={() => setShowAuth(false)}
         />
       )}
     </div>
