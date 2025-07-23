@@ -19,6 +19,7 @@ export default function Profile() {
   const [showSavedConfessions, setShowSavedConfessions] = useState(false);
   const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const [showPrivacySafety, setShowPrivacySafety] = useState(false);
+  const [showUserSearch, setShowUserSearch] = useState(false);
 
   if (!currentUser) return null;
 
